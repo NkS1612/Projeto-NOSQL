@@ -1,0 +1,74 @@
+from flask import Flask, render_template, request, redirect, url_for
+
+app = Flask(__name__)
+
+# Simulando um banco de dados de produtos
+produtos = [
+    {"id": 1, "nome": "Produto 1", "quantidade": 10},
+    {"id": 2, "nome": "Produto 2", "quantidade": 5},
+]
+
+# Simulando usuários
+usuarios = {"admin": "senha123"}
+
+# Página de login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if username in usuarios and usuarios[username] == password:
+            # Login bem-sucedido, redireciona para a página principal
+            return redirect(url_for('estoque'))
+    
+    # Se o login falhar ou for uma requisição GET, exibe a página de login
+    return render_template('login.html')
+
+# Página principal (lista de produtos)
+@app.route('/estoque')
+def estoque():
+    return render_template('estoque.html', produtos=produtos)
+
+# Adicionar produto
+@app.route('/produto/adicionar', methods=['GET', 'POST'])
+def adicionar_produto():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        quantidade = int(request.form['quantidade'])
+        
+        novo_produto = {
+            "id": len(produtos) + 1,
+            "nome": nome,
+            "quantidade": quantidade
+        }
+        
+        produtos.append(novo_produto)
+        return redirect(url_for('estoque'))
+    
+    return render_template('adicionar_produto.html')
+
+# Editar produto
+@app.route('/produto/editar/<int:produto_id>', methods=['GET', 'POST'])
+def editar_produto(produto_id):
+    produto = next((p for p in produtos if p['id'] == produto_id), None)
+    
+    if produto is None:
+        return "Produto não encontrado", 404
+    
+    if request.method == 'POST':
+        produto['nome'] = request.form['nome']
+        produto['quantidade'] = int(request.form['quantidade'])
+        return redirect(url_for('estoque'))
+    
+    return render_template('editar_produto.html', produto=produto)
+
+# Excluir produto
+@app.route('/produto/excluir/<int:produto_id>')
+def excluir_produto(produto_id):
+    global produtos
+    produtos = [p for p in produtos if p['id'] != produto_id]
+    return redirect(url_for('estoque'))
+
+if __name__ == '__main__':
+    app.run(debug=True)
