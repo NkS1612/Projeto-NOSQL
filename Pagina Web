@@ -1,0 +1,33 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Controle de Estoque{% endblock %}</title>
+</head>
+<body>
+
+    {% block content %}
+        {% if page == 'login' %}
+            <h1>Página de Login</h1>
+            <!-- Formulário de login aqui -->
+        {% elif page == 'estoque' %}
+            <h1>Lista de Produtos</h1>
+            <ul>
+                {% for produto in produtos %}
+                    <li>{{ produto.nome }} - {{ produto.quantidade }}</li>
+                {% endfor %}
+            </ul>
+            <!-- Outras partes da página de estoque aqui -->
+        {% elif page == 'adicionar_produto' %}
+            <h1>Adicionar Produto</h1>
+            <!-- Formulário para adicionar produto aqui -->
+        {% elif page == 'editar_produto' %}
+            <h1>Editar Produto</h1>
+            <!-- Formulário para editar produto aqui -->
+        {% endif %}
+    {% endblock %}
+
+</body>
+</html>
